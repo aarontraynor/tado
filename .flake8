@@ -1,0 +1,15 @@
+[flake8]
+max-line-length = 100
+max-complexity = 12
+ignore =
+  ; ignore line-length. this will be enforced by black 
+  E501
+  ; ignore linebreak before binary operator - conflict with black
+  W503
+exclude =
+  .git,
+  .venv,
+  .mypy_cache,
+  .pytest_cache,
+  __pycache__,
+  ./env
