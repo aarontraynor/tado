@@ -1,7 +1,9 @@
 import argparse
+import smtplib
 import traceback
 from datetime import datetime
-from pprint import pprint
+from email.mime.text import MIMEText
+from pprint import pformat, pprint
 from time import sleep
 from typing import Any, Dict
 
@@ -11,6 +13,9 @@ arg_parser = argparse.ArgumentParser()
 
 arg_parser.add_argument("-u", "--username", help="Your Tado username (normally your email address)")
 arg_parser.add_argument("-p", "--password", help="Your Tado password")
+arg_parser.add_argument("--email", help="The email address used to send/receive exception notifications")
+arg_parser.add_argument("--email_server", help="The URL of the email server used to send exception notifications")
+arg_parser.add_argument("--email_password", help="The password for the email address used to send exception notifications")
 
 args = arg_parser.parse_args()
 
@@ -92,7 +97,27 @@ while True:
                 log_file.write(f"{datetime_now}: Status changed to AWAY.\n")
 
         print("=============================================")
-    except Exception:
+    except Exception as e:
         with open("log.txt", "a+") as log_file:
             log_file.write(f"ERROR LOG: {traceback.format_exc()}")
+        body = f"""An exception occurred in the Tado app on your Raspberry Pi. Check the logs for more details.
+
+Exception: {e}
+
+Mobile devices:
+{pformat(mobile_devices)}
+
+Home state:
+{pformat(home_state)}
+"""
+        print(mobile_devices)
+        msg = MIMEText(body)
+        msg["Subject"] = "Raspberry Pi: An exception occurred"
+        msg["From"] = args.email
+        msg["To"] = args.email
+
+        with smtplib.SMTP_SSL(args.email_server, 465) as smtp_server:
+            smtp_server.login(args.email, args.email_password)
+            smtp_server.sendmail(args.email, [args.email], msg.as_string())
+
     sleep(30)
