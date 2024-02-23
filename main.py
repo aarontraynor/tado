@@ -13,29 +13,22 @@ arg_parser = argparse.ArgumentParser()
 
 arg_parser.add_argument("-u", "--username", help="Your Tado username (normally your email address)")
 arg_parser.add_argument("-p", "--password", help="Your Tado password")
-arg_parser.add_argument(
-    "--email", help="The email address used to send/receive exception notifications"
-)
-arg_parser.add_argument(
-    "--email_server", help="The URL of the email server used to send exception notifications"
-)
-arg_parser.add_argument(
-    "--email_password",
-    help="The password for the email address used to send exception notifications",
-)
+arg_parser.add_argument("--email", help="The email address used to send/receive exception notifications")
+arg_parser.add_argument("--email_server", help="The URL of the email server used to send exception notifications")
+arg_parser.add_argument("--email_password", help="The password for the email address used to send exception notifications")
 
 args = arg_parser.parse_args()
+
+t = Tado(args.username, args.password)
+
+devices = t.get_devices()
+zones = t.get_zones()
 
 
 previous_device_states: Dict[str, Any] = {}
 
 while True:
     try:
-        t = Tado(args.username, args.password)
-
-        devices = t.get_devices()
-        zones = t.get_zones()
-
         mobile_devices = t.get_mobile_devices()
         home_state = t.get_home_state()
 
