@@ -20,9 +20,13 @@ args = arg_parser.parse_args()
 
 t = Tado(args.username, args.password)
 
+mobile_devices = None
+home_state = None
+devices = None
+zones = None
+
 devices = t.get_devices()
 zones = t.get_zones()
-
 
 previous_device_states: Dict[str, Any] = {}
 
