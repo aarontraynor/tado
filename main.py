@@ -88,6 +88,15 @@ while True:
                     log_file.write(
                         f"{datetime_now}: An error occurred while getting the location of a device.\n\tDevice info: {device}\n\tError: {err}\n\n"
                     )
+                    requests.post(
+                        url=f"{args.healthcheck}/fail",
+                        json=dict(
+                            current_home_state=current_home_state,
+                            exception_name=type(err).__name__,
+                            mobile_devices=mobile_devices,
+                            stacktrace=traceback.format_exc(),
+                        ),
+                    )
 
             if is_home and current_home_state == "AWAY":
                 t.set_home()
@@ -99,12 +108,21 @@ while True:
                 log_file.write(f"{datetime_now}: Status changed to AWAY.\n")
 
         print("=============================================")
-    except Exception as e:
+    except Exception as err:
+        requests.post(
+            url=f"{args.healthcheck}/fail",
+            json=dict(
+                current_home_state=current_home_state,
+                exception_name=type(err).__name__,
+                mobile_devices=mobile_devices,
+                stacktrace=traceback.format_exc(),
+            ),
+        )
         with open("log.txt", "a+") as log_file:
             log_file.write(f"ERROR LOG: {traceback.format_exc()}")
         body = f"""An exception occurred in the Tado app on your Raspberry Pi. Check the logs for more details.
 
-Exception: {e}
+Exception: {err}
 
 Mobile devices:
 {pformat(mobile_devices)}
