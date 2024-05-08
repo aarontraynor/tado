@@ -91,12 +91,15 @@ while True:
                     requests.post(
                         url=f"{args.healthcheck}/fail",
                         json=dict(
-                            current_home_state=current_home_state,
-                            devices=devices,
+                            home_state=home_state if home_state else None,
+                            devices=devices if devices else None,
                             exception_name=type(err).__name__,
-                            mobile_devices=mobile_devices,
+                            mobile_devices=mobile_devices if mobile_devices else None,
+                            previous_device_states=previous_device_states
+                            if previous_device_states
+                            else None,
                             stacktrace=traceback.format_exc(),
-                            zones=zones,
+                            zones=zones if zones else None,
                         ),
                     )
 
@@ -114,11 +117,11 @@ while True:
         requests.post(
             url=f"{args.healthcheck}/fail",
             json=dict(
-                devices=devices,
+                devices=devices if devices else None,
                 exception_name=type(err).__name__,
-                mobile_devices=mobile_devices,
+                previous_device_states=previous_device_states if previous_device_states else None,
                 stacktrace=traceback.format_exc(),
-                zones=zones,
+                zones=zones if zones else None,
             ),
         )
         with open("log.txt", "a+") as log_file:
