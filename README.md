@@ -12,4 +12,4 @@ A log file `log.txt` will be created to track when a device changes state and wh
 `poetry install`
 
 ## Usage
-`poetry run python main.py -u <TADO_USERNAME> -p <TADO_PASSWORD>`
+`poetry run python main.py -u $TADO_USERNAME -p $TADO_PASSWORD --healthcheck $HEALTHCHECK_URL`
