@@ -1,12 +1,11 @@
 import argparse
-import smtplib
 import traceback
 from datetime import datetime
-from email.mime.text import MIMEText
 from pprint import pformat, pprint
 from time import sleep
 from typing import Any, Dict
 
+import requests
 from PyTado.interface import Tado
 
 arg_parser = argparse.ArgumentParser()
@@ -14,14 +13,7 @@ arg_parser = argparse.ArgumentParser()
 arg_parser.add_argument("-u", "--username", help="Your Tado username (normally your email address)")
 arg_parser.add_argument("-p", "--password", help="Your Tado password")
 arg_parser.add_argument(
-    "--email", help="The email address used to send/receive exception notifications"
-)
-arg_parser.add_argument(
-    "--email_server", help="The URL of the email server used to send exception notifications"
-)
-arg_parser.add_argument(
-    "--email_password",
-    help="The password for the email address used to send exception notifications",
+    "--healthcheck", help="The healthcheck URL used to send heartbeat HTTP requests."
 )
 
 args = arg_parser.parse_args()
@@ -86,6 +78,9 @@ while True:
 
                     # Update previous device state
                     previous_device_states[device_id] = device
+
+                    # Ping healthcheck endpoint
+                    requests.get(args.healthcheck)
                 except KeyError as err:
                     print("Error while getting location of device. Device info:")
                     pprint(device)
@@ -117,16 +112,4 @@ Mobile devices:
 Home state:
 {pformat(home_state)}
 """
-
-        # print(mobile_devices)
-        # msg = MIMEText(body)
-        # msg["Subject"] = "Raspberry Pi: An exception occurred"
-        # msg["From"] = args.email
-        # msg["To"] = args.email
-
-        # with smtplib.SMTP_SSL(args.email_server, 465) as smtp_server:
-        #     smtp_server.connect()
-        #     smtp_server.login(args.email, args.email_password)
-        #     smtp_server.sendmail(args.email, [args.email], msg.as_string())
-
     sleep(30)
