@@ -10,6 +10,7 @@ python = "^3.8.1"
 python-tado = "^0.17.0"
 isort = "^5.12.0"
 requests = "^2.31.0"
+types-requests = "^2.31.0.20240406"
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.6.1"
@@ -23,3 +24,9 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.black]
 line-length = 100
+
+[[tool.mypy.overrides]]
+module = [
+  "PyTado.*",
+]
+ignore_missing_imports = true
