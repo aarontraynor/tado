@@ -8,6 +8,50 @@ from typing import Any, Dict
 import requests
 from PyTado.interface import Tado
 
+MAX_RETRIES = 3
+
+
+def send_healthcheck_ping(
+    success: bool = True,
+    payload: dict = {},
+    retries: int = 0,
+) -> None:
+    if retries < MAX_RETRIES:
+        if success:
+            try:
+                requests.get(args.healthcheck)
+            except Exception:
+                retries = retries + 1
+                print(
+                    f"An error occurred while pinging healthcheck - retrying ({retries}/{MAX_RETRIES})..."
+                )
+                sleep(0.1)
+                send_healthcheck_ping(
+                    success=success,
+                    payload=payload,
+                    retries=retries,
+                )
+        else:
+            try:
+                requests.post(
+                    url=f"{args.healthcheck}/fail",
+                    json=payload,
+                )
+            except Exception:
+                retries = retries + 1
+                print(
+                    f"An error occurred while pinging healthcheck. - retrying ({retries}/{MAX_RETRIES})..."
+                )
+                sleep(0.1)
+                send_healthcheck_ping(
+                    success=success,
+                    payload=payload,
+                    retries=retries,
+                )
+    else:
+        print("Max retries exceeded. Skipping healthcheck ping.")
+
+
 arg_parser = argparse.ArgumentParser()
 
 arg_parser.add_argument("-u", "--username", help="Your Tado username (normally your email address)")
@@ -84,7 +128,7 @@ while True:
                     previous_device_states[device_id] = device
 
                     # Ping healthcheck endpoint
-                    requests.get(args.healthcheck)
+                    send_healthcheck_ping(success=True)
                 except KeyError as err:
                     print("Error while getting location of device. Device info:")
                     pprint(device)
@@ -92,9 +136,9 @@ while True:
                     log_file.write(
                         f"{datetime_now}: An error occurred while getting the location of a device.\n\tDevice info: {device}\n\tError: {err}\n\n"
                     )
-                    requests.post(
-                        url=f"{args.healthcheck}/fail",
-                        json=dict(
+                    send_healthcheck_ping(
+                        success=False,
+                        payload=dict(
                             home_state=home_state if home_state else None,
                             devices=devices if devices else None,
                             exception_name=type(err).__name__,
@@ -118,9 +162,9 @@ while True:
 
         print("=============================================")
     except Exception as err:
-        requests.post(
-            url=f"{args.healthcheck}/fail",
-            json=dict(
+        send_healthcheck_ping(
+            success=False,
+            payload=dict(
                 devices=devices if devices else None,
                 exception_name=type(err).__name__,
                 previous_device_states=previous_device_states if previous_device_states else None,
