@@ -23,6 +23,8 @@ def setup_args(arg_parser: ArgumentParser) -> None:
 def get_tado_credentials(arg_parser: ArgumentParser) -> TadoCredentials:
     args = arg_parser.parse_args()
 
+    setup_args(arg_parser=arg_parser)
+
     return TadoCredentials(
         username=args.username,
         password=args.password,
