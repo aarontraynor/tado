@@ -1,5 +1,6 @@
 import logging
 from argparse import ArgumentParser
+from time import sleep
 
 from models import TadoState
 from tado import (
@@ -44,3 +45,5 @@ while True:
     except Exception:
         logger.exception("An error occurred during the main loop execution.")
         write_exception_to_file()
+
+    sleep(30)
