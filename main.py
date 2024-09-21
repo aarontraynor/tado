@@ -17,6 +17,7 @@ from tado import (
 logger = logging.getLogger(__name__)
 
 arg_parser = ArgumentParser()
+
 tado_credentials = get_tado_credentials(arg_parser=arg_parser)
 tado = login(credentials=tado_credentials)
 
