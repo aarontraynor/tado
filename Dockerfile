@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 python:3.12-alpine as base
+FROM python:3.12-alpine as base
 
 RUN apk update
 
@@ -14,4 +14,4 @@ ENV PATH="/.venv/bin:$PATH"
 
 COPY ./tado .
 
-CMD [“poetry run python”, “./main.py”]
+CMD ["poetry", "run", "python", "./main.py"]
