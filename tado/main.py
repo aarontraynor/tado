@@ -1,8 +1,10 @@
 import logging
+import os
 from argparse import ArgumentParser
 from time import sleep
 
 from models import TadoState
+
 from tado import (
     get_home_state,
     get_mobile_devices,
@@ -22,6 +24,8 @@ tado_credentials = get_tado_credentials(arg_parser=arg_parser)
 tado = login(credentials=tado_credentials)
 
 tado_state = TadoState()
+
+os.makedirs(os.path.dirname("./error_logs/"), exist_ok=True)
 
 while True:
     try:

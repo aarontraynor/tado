@@ -4,10 +4,9 @@ from argparse import ArgumentParser
 from datetime import datetime, timedelta
 from uuid import uuid4
 
+from models import TadoCredentials, TadoState
 from PyTado.interface import Tado
 from retry import retry
-
-from models import TadoCredentials, TadoState
 
 logger = logging.getLogger(__name__)
 
@@ -70,6 +69,7 @@ def is_device_at_home(device: dict) -> bool:
     tracking_enabled = device["settings"]["geoTrackingEnabled"]
     if not device["location"]:
         logger.warning(f"No location info for device {device['name']}")
+        write_exception_to_file()
         return False
 
     at_home = device["location"]["atHome"] if tracking_enabled else False
@@ -118,7 +118,7 @@ def write_exception_to_file():
         timestamp = datetime.now().isoformat()
         random_string = uuid4().hex
 
-        filename = f"{timestamp}__{random_string}.txt"
+        filename = f"./error_logs/{timestamp}__{random_string}.txt"
 
         with open(filename, "w+") as log_file:
             log_file.write(f"ERROR LOG: {traceback.format_exc()}")
