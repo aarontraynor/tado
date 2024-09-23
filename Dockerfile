@@ -11,8 +11,6 @@ COPY poetry.lock .
 RUN poetry install --no-root --no-ansi --without dev
 
 ENV PATH="/.venv/bin:${PATH}"
-ENV TADO_USERNAME=${TADO_USERNAME}
-ENV TADO_PASSWORD=${TADO_PASSWORD}
 
 COPY ./tado .
 
