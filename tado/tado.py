@@ -74,8 +74,9 @@ def is_device_at_home(tado_state: TadoState, device: dict) -> bool:
 
         tado_state.devices_with_no_location[device_id] = device
         return False
-    else:
+    elif device_id in tado_state.devices_with_no_location.keys():
         tado_state.devices_with_no_location.pop(device_id, None)
+        logger.info(f"Location info for {device['name']} re-enabled")
 
     tracking_enabled = device["settings"]["geoTrackingEnabled"]
     at_home = device["location"]["atHome"] if tracking_enabled else False
