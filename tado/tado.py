@@ -69,7 +69,6 @@ def is_device_at_home(device: dict) -> bool:
     tracking_enabled = device["settings"]["geoTrackingEnabled"]
     if not device["location"]:
         logger.warning(f"No location info for device {device['name']}")
-        write_exception_to_file()
         return False
 
     at_home = device["location"]["atHome"] if tracking_enabled else False
