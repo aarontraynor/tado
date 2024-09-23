@@ -1,4 +1,4 @@
-FROM python:3.12-alpine as base
+FROM python:3.12-alpine AS base
 
 RUN apk update
 
