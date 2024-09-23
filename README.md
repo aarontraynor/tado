@@ -13,7 +13,7 @@ A log file `log.txt` will be created to track when a device changes state and wh
 
 ## Usage (via Docker)
 `docker build -t tado-geolocation .`
-`docker run -d tado-geolocation -u $TADO_USERNAME -p $TADO_PASSWORD`
+`docker run -d --name tado tado-geolocation -u $TADO_USERNAME -p $TADO_PASSWORD`
 
 ## Usage (Manual)
 `poetry run python main.py -u $TADO_USERNAME -p $TADO_PASSWORD`

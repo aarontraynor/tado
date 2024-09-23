@@ -65,12 +65,19 @@ def get_home_state(tado: Tado) -> dict:
     return tado.get_home_state()
 
 
-def is_device_at_home(device: dict) -> bool:
-    tracking_enabled = device["settings"]["geoTrackingEnabled"]
-    if not device["location"]:
-        logger.warning(f"No location info for device {device['name']}")
-        return False
+def is_device_at_home(tado_state: TadoState, device: dict) -> bool:
+    device_id = device["id"]
 
+    if not device["location"]:
+        if device_id not in tado_state.devices_with_no_location.keys():
+            logger.warning(f"No location info for device {device['name']}")
+
+        tado_state.devices_with_no_location[device_id] = device
+        return False
+    else:
+        tado_state.devices_with_no_location.pop(device_id, None)
+
+    tracking_enabled = device["settings"]["geoTrackingEnabled"]
     at_home = device["location"]["atHome"] if tracking_enabled else False
     location_stale = device["location"]["stale"] if tracking_enabled else False
 
@@ -90,7 +97,7 @@ def is_home_occupied(tado_state: TadoState) -> bool:
     print(f"Device count: {len(tado_state.mobile_devices)}")
     for device in tado_state.mobile_devices:
         try:
-            if is_device_at_home(device):
+            if is_device_at_home(tado_state=tado_state, device=device):
                 devices_at_home.append(device)
 
             update_previous_device_state(
