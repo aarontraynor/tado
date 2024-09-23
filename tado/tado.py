@@ -4,7 +4,6 @@ from argparse import ArgumentParser
 from datetime import datetime, timedelta
 from uuid import uuid4
 
-from isort import file
 from PyTado.interface import Tado
 from retry import retry
 
@@ -69,6 +68,10 @@ def get_home_state(tado: Tado) -> dict:
 
 def is_device_at_home(device: dict) -> bool:
     tracking_enabled = device["settings"]["geoTrackingEnabled"]
+    if not device["location"]:
+        logger.warning(f"No location info for device {device['name']}")
+        return False
+
     at_home = device["location"]["atHome"] if tracking_enabled else False
     location_stale = device["location"]["stale"] if tracking_enabled else False
 
@@ -85,6 +88,7 @@ def update_previous_device_state(
 
 def is_home_occupied(tado_state: TadoState) -> bool:
     devices_at_home = []
+    print(f"Device count: {len(tado_state.mobile_devices)}")
     for device in tado_state.mobile_devices:
         try:
             if is_device_at_home(device):
