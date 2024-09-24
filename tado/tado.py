@@ -115,8 +115,10 @@ def update_home_state_if_required(
 ) -> None:
     if is_home_occupied and current_home_status == "AWAY":
         set_home(tado_instance=tado_instance)
+        logger.info("Setting status to HOME.")
     elif not is_home_occupied and current_home_status == "HOME":
         set_away(tado_instance=tado_instance)
+        logger.info("Setting status to AWAY.")
 
 
 def write_exception_to_file():
