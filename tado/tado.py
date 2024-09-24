@@ -95,7 +95,6 @@ def update_previous_device_state(
 
 def is_home_occupied(tado_state: TadoState) -> bool:
     devices_at_home = []
-    print(f"Device count: {len(tado_state.mobile_devices)}")
     for device in tado_state.mobile_devices:
         try:
             if is_device_at_home(tado_state=tado_state, device=device):
