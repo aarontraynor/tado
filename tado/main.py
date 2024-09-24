@@ -24,14 +24,18 @@ logging.basicConfig(
     datefmt="%Y-%m-%d %H:%M:%S",
 )
 
+logger.info("Performing initial setup...")
 arg_parser = ArgumentParser()
 
+logger.info("Authenticating with Tado...")
 tado_credentials = get_tado_credentials(arg_parser=arg_parser)
 tado = login(credentials=tado_credentials)
 
+logger.info("Finalising setup...")
 tado_state = TadoState()
-
 os.makedirs(os.path.dirname("./error_logs/"), exist_ok=True)
+
+logger.info("Initial setup complete. Monitoring...")
 
 while True:
     try:
